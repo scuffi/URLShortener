@@ -1,0 +1,30 @@
+
+version: '3.8'
+services:
+  redis-service:
+    image: redis:7.0-alpine
+    restart: always
+    command: redis-server --save 20 1 --loglevel warning --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+    # volumes: 
+    #   - redis-service:/data
+
+  api-service:
+    container_name: url-shortener-api
+    build:
+      context: ./api_service
+    image: url-shortener-api
+    depends_on:
+      - redis-service
+    ports:
+      - 3000:3000
+    environment:
+      REDIS_HOST: redis-service
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+    restart: always
+    volumes:
+      - ./:/src
+
+volumes:
+  service:
+    driver: local
